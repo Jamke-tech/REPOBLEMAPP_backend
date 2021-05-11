@@ -425,9 +425,16 @@ export async function addOfferToFavourites(req: Request,res:Response): Promise<R
   }
 
 
+}
+export async function deleteOfferOfFavourites(req: Request,res:Response): Promise<Response>{
+  //Aquesta funció afegeix la oferta que ens pasen per body ( id ), al usuari que ens passen ( també id)
 
-
-
+  const{ idUser, idOffer}=req.body;
+  return res.json({
+    code:"506",
+    message: "Service no disponible"
+    
+  }); 
 
 
 }
