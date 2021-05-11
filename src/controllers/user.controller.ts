@@ -3,6 +3,8 @@ import User from "../models/User";
 import path from 'path';
 import fs from 'fs-extra';
 
+const jwt = require('jsonwebtoken');
+
 
 const cloudinary = require('cloudinary').v2
 
@@ -85,16 +87,28 @@ export async function loginUsers (req:Request,res:Response):Promise<Response> {
 
   //Hem de comprovar que la contrasenya sigui la mateixa que ens entren 
   //ACHTUNG !! Quan tenim un fid ens retorna un vector
+  //Hem de crear el token per retornar a l'usuari si el password esta correcte
     
     if(user[0].password == password )
     {
+      //Creem token 
+      const token = jwt.sign(
+        {
+        name: user[0].username,
+        id: user[0]._id,
+        role: user[0].role
+        },
+      'secret',
+      {expiresIn: 60*60});
+      
+      
       //Contrasenya correcta 
       return res.json({
         code: '200',
         message: "User authorized",
         id: user[0].id,
-        //token
-        //rol
+        token: token,
+        rol: user[0].role
       });
     }
     else{
@@ -102,8 +116,8 @@ export async function loginUsers (req:Request,res:Response):Promise<Response> {
         code:'401',
         message: " Acces Unahtorized",
         id: user[0].id,
-        //token
-        //rol
+        token: null,
+        rol:user[0].role
       });
     }
   } 
