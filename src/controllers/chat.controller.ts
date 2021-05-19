@@ -10,16 +10,15 @@ const http = require('http').createServer(app)
 const io = require('socket.io')(http);
 
 
-
-
 export async function createChat ( req: Request, res: Response): Promise<Response>{
     //Es el primer cop que iniciem un chat aixi que haurem de crear el objecte de BBDD i guardar-ho
 
-    const { myID, ownerID, offerRelated}=req.body;
+    const { myID, ownerID, offerID}=req.body;
 
     const newChat ={
-        with: [ownerID,myID],
-        offerRelated: offerRelated,
+        owner: ownerID,
+        user: myID,
+        offerRelated: offerID,
         messages: []
     }
     console.log(newChat);
@@ -33,25 +32,31 @@ export async function createChat ( req: Request, res: Response): Promise<Respons
         const user = await User.findById(myID);
         const owner = await User.findById(ownerID);
         var social = user.social;
+        console.log(social)
         var ownersocial = owner.social;
+        console.log(ownersocial)
+        console.log(chatSaved._id)
 
-        social.push(chatSaved.id)
-        ownersocial.push(chatSaved.id)
-        
-        const userUpdated = await Chat.findByIdAndUpdate(
+        social.push(chatSaved._id)
+        console.log(social)
+        ownersocial.push(chatSaved._id)
+        console.log(ownersocial)
+
+        const userUpdated = await User.findByIdAndUpdate(
             myID,
-            {$set:{
+            {
               "social": social,
       
-            },}
+            },
           );
+
+        console.log(userUpdated)
         
-        const ownerUpdated = await Chat.findByIdAndUpdate(
+        const ownerUpdated = await User.findByIdAndUpdate(
             ownerID,
-            {$set:{
+            {
               "social": ownersocial,
-      
-            },}
+            },
           );
 
         return res.json({
@@ -71,6 +76,46 @@ export async function createChat ( req: Request, res: Response): Promise<Respons
     }
 
 }
+
+export async function findChat( req:Request, res:Response):Promise<Response>{
+
+    const {idOffer,idUser}=req.params;
+
+    try{
+        const Chats = await Chat.find({offerRelated:idOffer, user:idUser});
+
+        //Si no es null podem dir que si que existeix
+
+        if(Chats[0]!=null){
+
+            return res.json({
+                code: '200',
+                message: "Chat Encontrado",
+                Chat: Chats[0]
+            });
+        }
+        else{
+            return res.json({
+                code: '404',
+                message: "Chat  NO Encontrado",
+                Chat: null
+            });
+
+        }
+    }
+    catch(e){
+        console.log(e);
+
+        return res.json({
+            code: '500',
+            message: "Error de Servidor",
+            Chat: null
+        });
+
+    }
+
+}
+
 export async function deleteChat ( req: Request, res: Response): Promise<Response>{
     //Es el primer cop que iniciem un chat aixi que haurem de crear el objecte de BBDD i guardar-ho
 
@@ -79,7 +124,9 @@ export async function deleteChat ( req: Request, res: Response): Promise<Respons
     try{
         //Borramos la oferta
         //Recuperamos la id de la oferta para poder borrarla
-        const idOwner = await Chat.findByIdAndDelete(idChat).with[0];
+        const chatOwner = await Chat.findById(idChat)
+
+        const idOwner = chatOwner.owner
 
         //borramos Chat
         const chat = await Chat.findByIdAndDelete(idChat);
@@ -88,38 +135,32 @@ export async function deleteChat ( req: Request, res: Response): Promise<Respons
             //Borramos del vector de Social los chats que queremos eliminar
 
             const user = await User.findById(idUser);
-            const owner = await User.findById(ownerID);
+            const owner = await User.findById(idOwner);
             var social = user.social;
+            console.log(social)
             var ownersocial = owner.social;
+            console.log(ownersocial)
+            console.log(idChat)
 
-            social.push(chatSaved.id)
-            ownersocial.push(chatSaved.id)
+            const userSocial = arrayRemove(social,idChat);
+            console.log(userSocial);
+            const ownerSocial = arrayRemove(ownersocial,idChat);
             
-            const userUpdated = await Chat.findByIdAndUpdate(
-                myID,
-                {$set:{
-                "social": social,
+            const userUpdated = await User.findByIdAndUpdate(
+                idUser,
+                {
+                "social": userSocial,
         
-                },}
+                },
             );
             
-            const ownerUpdated = await Chat.findByIdAndUpdate(
-                ownerID,
-                {$set:{
-                "social": ownersocial,
+            const ownerUpdated = await User.findByIdAndUpdate(
+                idOwner,
+                {
+                "social": ownerSocial,
         
-                },}
+                },
             );
-
-
-
-
-
-
-
-
-            
-
 
             return res.json({
               code: '200',
@@ -170,25 +211,39 @@ export async function getMessages (req:Request, res:Response): Promise<Response>
 
     }
 }
+export async function getChats (req:Request, res:Response): Promise<Response>{
 
-export async function getChats(req:Request, res:Response): Promise<Response>{
 
-
-    const{id}=req.params;
+    const{idUser}=req.params;
 
     try{
 
-        const user = User.find({talkers:{}})
+        const user = await User.findById(idUser).populate();
+        var social = user.social;
 
-
-
-
-
+        return res.json({
+            code: '200',
+            message: "Chats Available ",
+            activeChats: social
+        });
+    
+    }
+    catch(e){
+        return res.json({
+            code: '500',
+            message: "UPS error de Servidor",
+            activeChats: null
+        });
 
     }
 
 
 
+}
 
+function arrayRemove(arr:String[],value:String){
+    return arr.filter(function(ele:String){
+        return ele!=value;
+    });
 }
 

@@ -5,7 +5,8 @@ var SchemaMongo = mongoose.Schema;
 //Falta implemtnar és una base molt pobre
 
 const schema = new Schema({
-    talkers: [{type: SchemaMongo.ObjectId, ref: "User"}],
+    owner: {type: SchemaMongo.ObjectId, ref: "User"},
+    user:{type: SchemaMongo.ObjectId, ref: "User"},
     offerRelated: {type: SchemaMongo.ObjectId, ref: "Offer", required:true},
     messages: [{
         sender: {type: SchemaMongo.ObjectId, ref: "User"},
