@@ -2,10 +2,12 @@ import express from 'express';
 import cors from 'cors'
 import morgan from 'morgan';
 import path from 'path'
+import socketIO, {Socket} from "socket.io";
 
 const app = express();
 
 import indexRoutes from './routes/index'
+import Chat from './models/Chat';
 
 const cloudinary = require('cloudinary').v2
 const bodyParser = require ('body-parser');
@@ -30,5 +32,68 @@ app.use('/uploads',express.static(path.resolve('uploads')));
 
 
 
-  export default app;
+//Socket logic
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
+
+
+io.on('connection', (socket : Socket) => {
+
+    const chatID = socket.handshake.query.chatID;
+    socket.join(chatID as string)
+
+    //Desconnexió del chat
+    socket.on('disconnect', ()=>{
+        socket.leave(chatID as string)
+    })
+
+    socket.on('send_message',async (message)=> {
+
+        const senderChatID = message.senderChatID;//ID del emisor del missatge
+
+        const content = message.content; //Contingut del missatge
+
+
+        socket.in(chatID as string).emit('receive_message',{
+            'content':content,
+        })
+        //He de guardar els missatges que s'han enviat dins del vector de missatges
+
+        //El chat id sera el mateix id que el de la bbdd aixi que podem buscar i afegir els missatge
+        const chatInfo = await Chat.findById(chatID);
+        var newMessages = chatInfo.messages;
+        newMessages.push({sender:senderChatID,content:content});
+        //console.log(vectorOffers);
+
+        const userUpdated = await Chat.findByIdAndUpdate(
+        chatID,
+        {$set:{
+            "messages": newMessages,
+        },}
+        );
+
+        
+
+
+
+
+
+
+
+
+
+
+
+  
+    })
+
+})
+
+
+
+
+
+
+
+export default app;
 

@@ -13,6 +13,7 @@ import {
   addOfferToFavourites
 } from "../controllers/user.controller";
 import multer from "../libs/multer";
+import { createChat, deleteChat, enterChat, getMessages } from '../controllers/chat.controller';
 
 
 //Construim el router on posarem totes les entrades de la API
@@ -62,6 +63,19 @@ router.route('/offers')
 router.route('/offer/:id')
     .get(getOffer)
     .delete(deleteOffer)
+
+
+//rutes relacionades amb el chat
+
+router.route('/newChat')
+    .post(createChat)
+
+router.route('/Chat/:idChat/:idUser')
+    .get(getMessages)
+    .delete(deleteChat)
+
+
+
 
 
 //Per aconseguir les fotografies del backend

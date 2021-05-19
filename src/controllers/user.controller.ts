@@ -260,7 +260,7 @@ export async function createUserNoPhoto( req: Request,  res: Response ): Promise
     }
     else{
       //Eliminem la fotografia
-      await fs.unlink(path.resolve(user.profilePhoto))
+      //await fs.unlink(path.resolve(user.profilePhoto))
       return res.json({
         code: '200',
         message: "User correctly uploaded",
