@@ -6,8 +6,19 @@ var SchemaMongo = mongoose.Schema;
 
 const schema = new Schema({
     owner: {type: SchemaMongo.ObjectId, ref: "User"},
-    user:{type: SchemaMongo.ObjectId, ref: "User"},
-    offerRelated: {type: SchemaMongo.ObjectId, ref: "Offer", required:true},
+    user:{type: SchemaMongo.ObjectId, ref: "User",
+            denormalize:['name','surname'], 
+            required:true,
+            propagate: true,
+            populate:true
+    },
+    offerRelated: {type: SchemaMongo.ObjectId, ref: "Offer",
+            denormalize:['title','pictures'], 
+            required:true,
+            propagate: true,
+            populate:true
+                            
+        },
     messages: [{
         sender: {type: SchemaMongo.ObjectId, ref: "User"},
         content: {type: String}

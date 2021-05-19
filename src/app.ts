@@ -49,12 +49,13 @@ io.on('connection', (socket : Socket) => {
 
     socket.on('send_message',async (message)=> {
 
-        const senderChatID = message.senderChatID;//ID del emisor del missatge
+        const sender = message.sender;//ID del emisor del missatge
 
         const content = message.content; //Contingut del missatge
 
 
         socket.in(chatID as string).emit('receive_message',{
+            'sender':sender,
             'content':content,
         })
         //He de guardar els missatges que s'han enviat dins del vector de missatges
@@ -62,14 +63,14 @@ io.on('connection', (socket : Socket) => {
         //El chat id sera el mateix id que el de la bbdd aixi que podem buscar i afegir els missatge
         const chatInfo = await Chat.findById(chatID);
         var newMessages = chatInfo.messages;
-        newMessages.push({sender:senderChatID,content:content});
+        newMessages.push({sender:sender,content:content});
         //console.log(vectorOffers);
 
         const userUpdated = await Chat.findByIdAndUpdate(
         chatID,
-        {$set:{
+        {
             "messages": newMessages,
-        },}
+        },
         );
 
     })

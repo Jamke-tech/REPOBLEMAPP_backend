@@ -62,7 +62,7 @@ export async function createChat ( req: Request, res: Response): Promise<Respons
         return res.json({
             code: '200',
             message: "Chat Created",
-            idChat: chatSaved.id
+            Chat: chatSaved
           });
     }
 
@@ -71,7 +71,7 @@ export async function createChat ( req: Request, res: Response): Promise<Respons
         return res.json({
             code: '400',
             message: "Chat NotCreated",
-            idChat: null
+            Chat: null
         });
     }
 
@@ -218,7 +218,7 @@ export async function getChats (req:Request, res:Response): Promise<Response>{
 
     try{
 
-        const user = await User.findById(idUser).populate();
+        const user = await User.findById(idUser).populate('social').populate(['owner','user','offerRelated']);
         var social = user.social;
 
         return res.json({
@@ -240,6 +240,10 @@ export async function getChats (req:Request, res:Response): Promise<Response>{
 
 
 }
+
+
+
+
 
 function arrayRemove(arr:String[],value:String){
     return arr.filter(function(ele:String){
