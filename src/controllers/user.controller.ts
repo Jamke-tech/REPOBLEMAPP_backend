@@ -416,10 +416,9 @@ export async function addOfferToFavourites(req: Request,res:Response): Promise<R
 
     const userUpdated = await User.findByIdAndUpdate(
       idUser,
-      {$set:{
+      {
         "savedOffers": vectorOffers,
-
-      },}
+      },
     );
 
     return res.json({

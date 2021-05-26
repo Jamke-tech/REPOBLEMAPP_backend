@@ -19,7 +19,10 @@ export async function createChat ( req: Request, res: Response): Promise<Respons
         owner: ownerID,
         user: myID,
         offerRelated: offerID,
-        messages: []
+        messages: [{
+            sender: "607fe4ac8e48baa90cd6ded2",
+            content: "Xat iniciat",}
+        ]
     }
     console.log(newChat);
 
@@ -59,10 +62,15 @@ export async function createChat ( req: Request, res: Response): Promise<Respons
             },
           );
 
+
+
+
+        const infoChat = await Chat.findById(chatSaved._id).populate('owner offerRelated');
+
         return res.json({
             code: '200',
             message: "Chat Created",
-            Chat: chatSaved
+            Chat: infoChat
           });
     }
 
@@ -82,7 +90,7 @@ export async function findChat( req:Request, res:Response):Promise<Response>{
     const {idOffer,idUser}=req.params;
 
     try{
-        const Chats = await Chat.find({offerRelated:idOffer, user:idUser});
+        const Chats = await Chat.find({offerRelated:idOffer, user:idUser}).populate('owner offerRelated');
 
         //Si no es null podem dir que si que existeix
 
@@ -218,7 +226,7 @@ export async function getChats (req:Request, res:Response): Promise<Response>{
 
     try{
 
-        const user = await User.findById(idUser).populate('social').populate(['owner','user','offerRelated']);
+        const user = await User.findById(idUser).populate({path:'social',populate:'owner offerRelated'});
         var social = user.social;
 
         return res.json({

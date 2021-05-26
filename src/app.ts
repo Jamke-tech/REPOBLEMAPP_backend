@@ -3,7 +3,7 @@ import cors from 'cors'
 import morgan from 'morgan';
 import path from 'path'
 import socketIO, {Socket} from "socket.io";
-
+import {Request, Response} from 'express'
 const app = express();
 
 import indexRoutes from './routes/index'
@@ -29,7 +29,9 @@ app.use('/api',indexRoutes); //Les rutes començaran per api i continuaran com p
 // Preparació per poder pujar fotografies amb multer i a la carpeta que pot accedir
 app.use('/uploads',express.static(path.resolve('uploads')));
 
-
+app.get('/', (req:Request,res:Response)=>{
+    res.send("RepoblemAPP server working")
+})
 
 
 //Socket logic
@@ -42,6 +44,8 @@ io.on('connection', (socket : Socket) => {
     const chatID = socket.handshake.query.chatID;
     socket.join(chatID as string)
 
+    console.log("User connected to chat: "+ chatID);
+
     //Desconnexió del chat
     socket.on('disconnect', ()=>{
         socket.leave(chatID as string)
@@ -53,6 +57,7 @@ io.on('connection', (socket : Socket) => {
 
         const content = message.content; //Contingut del missatge
 
+        console.log("The sender "+ sender +" says: "+content);
 
         socket.in(chatID as string).emit('receive_message',{
             'sender':sender,
