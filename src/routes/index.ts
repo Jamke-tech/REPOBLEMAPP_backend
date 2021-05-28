@@ -14,6 +14,7 @@ import {
 } from "../controllers/user.controller";
 import multer from "../libs/multer";
 import { createChat, deleteChat, findChat, getChats, getMessages } from '../controllers/chat.controller';
+import { createSocket } from '../controllers/socket.controller';
 
 
 //Construim el router on posarem totes les entrades de la API
@@ -82,7 +83,8 @@ router.route('/Chat/:idChat/:idUser')
 router.route('/Chat/:idOffer/:idUser')
     .get(findChat)
 
-
+router.route('/Chat')
+    .get(createSocket)
 
 
 
