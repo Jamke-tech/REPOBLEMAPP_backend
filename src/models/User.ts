@@ -12,6 +12,7 @@ const schema = new Schema({
     phone: Number,
     profilePhoto: String,
     birthDate: Date,
+    createdOffers: [{type: SchemaMongo.ObjectId, ref: "Offer", populate: true}], //Las ofertas guardadas seran vector de Offers
     savedOffers: [{type: SchemaMongo.ObjectId, ref: "Offer", populate: true}], //Las ofertas guardadas seran vector de Offers
     social: [{type: SchemaMongo.ObjectId, ref: "Chat",populate:true, propagate:true}], //Todas las conversaciones que tiene
     role: {type: String, enum: ["USER", "ADMIN"], required:true},
