@@ -15,6 +15,7 @@ import {
 import multer from "../libs/multer";
 import { createChat, deleteChat, findChat, getChats, getMessages } from '../controllers/chat.controller';
 import { createSocket } from '../controllers/socket.controller';
+import { createAjuda, getAjuda, getAjudes } from '../controllers/ajuda.controller';
 
 
 //Construim el router on posarem totes les entrades de la API
@@ -86,6 +87,15 @@ router.route('/Chat/:idOffer/:idUser')
 router.route('/Chat')
     .get(createSocket)
 
+//Ruta per ajudes
+router.route('/ajuda')
+    .post(createAjuda)
+
+router.route('/ajudes')
+    .get(getAjudes)
+
+router.route('/ajuda/:id')
+    .get(getAjuda)
 
 
 //Per aconseguir les fotografies del backend
