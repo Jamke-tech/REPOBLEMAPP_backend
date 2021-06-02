@@ -162,7 +162,7 @@ catch{
 }
 
 export async function createCompleteUser( req: Request,  res: Response ): Promise<Response> {
-  const { userName, name, surname, password, email, phone, birthDate, image } = req.body;
+  const { userName, name, surname, password, email, phone, birthDate, image, notifications, privacity, security } = req.body;
    
   //Subimos la fotografia a la nube
   //await cloudinary.uploader.upload(image);
@@ -176,7 +176,10 @@ export async function createCompleteUser( req: Request,  res: Response ): Promis
     phone: phone,
     profilePhoto: "uploads/"+req.file.filename,
     birthDate: birthDate,
-    role: "USER"
+    role: "USER",
+    notifications: notifications,
+    privacity: privacity,
+    security: security,
   };
   console.log(newUser);
   try{
@@ -219,7 +222,7 @@ catch{
 }
 }
 export async function createUserNoPhoto( req: Request,  res: Response ): Promise<Response> {
-  const { userName, name, surname, password, email, phone, birthDate } = req.body;
+  const { userName, name, surname, password, email, phone, birthDate, notifications, privacity, security } = req.body;
    console.log(req.body);
   //Subimos la fotografia a la nube
   //await cloudinary.uploader.upload(image);
@@ -236,6 +239,9 @@ export async function createUserNoPhoto( req: Request,  res: Response ): Promise
     role: "USER",
     savedOffers: [],
     social: [],
+    notifications: notifications,
+    privacity: privacity,
+    security: security,
   };
   console.log(newUser);
   try{
@@ -368,6 +374,9 @@ export async function updateUser( req: Request, res: Response): Promise<Response
     phone,
     profilePhoto,
     birthDate,
+    notifications,
+    privacity,
+    security,
   } = req.body;
   try{
     const updatedUser = await User.findByIdAndUpdate(
@@ -381,6 +390,9 @@ export async function updateUser( req: Request, res: Response): Promise<Response
         phone,
         profilePhoto,
         birthDate,
+        notifications,
+        privacity,
+        security,
       },
       { new: true }
     );
