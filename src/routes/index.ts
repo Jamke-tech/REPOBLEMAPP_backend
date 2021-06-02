@@ -14,6 +14,7 @@ import {
 } from "../controllers/user.controller";
 import multer from "../libs/multer";
 import { createChat, deleteChat, findChat, getChats, getMessages } from '../controllers/chat.controller';
+import { addFaq, getFaqs } from '../controllers/question.controller';
 
 
 //Construim el router on posarem totes les entrades de la API
@@ -89,6 +90,10 @@ router.route('/Chat/:idOffer/:idUser')
 //Per aconseguir les fotografies del backend
 
 router.route('/photo/:id')
+
+//Rutes FAQs
+router.route('/faqs/new').post(addFaq)
+router.route('/faqs').get(getFaqs)
 
 
 //Exportem totes les rutes per que les utilitzin
