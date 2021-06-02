@@ -312,7 +312,8 @@ export async function getUser(req: Request, res: Response): Promise<Response> {
     message: 'User Found',
     user: user});
   }
-  catch{
+  catch(e){
+    console.log(e);
     return res.json({
       code: '500',
       message: 'Server Down or BBDD error',
@@ -448,6 +449,45 @@ export async function deleteOfferOfFavourites(req: Request,res:Response): Promis
     message: "Service no disponible"
     
   }); 
+
+
+}
+
+export async function addInsignia(req: Request,res:Response): Promise<Response>{
+  //Aquesta funció afegeix la oferta que ens pasen per body ( id ), al usuari que ens passen ( també id)
+
+  const{nameInsignia}=req.body;
+  const{id}=req.params;
+  try{
+    const user = await User.findById(id);
+    var insignias = user.insignias;
+
+    insignias.push(nameInsignia)
+
+
+
+    const ownerUpdated = await User.findByIdAndUpdate(
+      id,
+      {
+        "insignias": insignias,
+      },
+    );
+    return res.json({
+      code:"200",
+      message: "Inisgnia Uploaded",
+      user: ownerUpdated
+      
+    });
+  }
+  catch (e){
+    return res.json({
+      code:"505",
+      message: "Error en el servidor"
+      
+    });
+
+  }
+   
 
 
 }
