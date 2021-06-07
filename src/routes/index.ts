@@ -10,7 +10,8 @@ import {
   createADMIN,
   loginADMIN,
   createUserNoPhoto,
-  addOfferToFavourites
+  addOfferToFavourites,
+  uploadPhotouser
 } from "../controllers/user.controller";
 import multer from "../libs/multer";
 import { createChat, deleteChat, findChat, getChats, getMessages } from '../controllers/chat.controller';
@@ -37,6 +38,9 @@ router.route("/user")
     .post(multer.single('image'),createCompleteUser)
     .put(createUserNoPhoto);
 
+router.route("/user/newPhoto/:id")
+    .post(multer.single('image'),uploadPhotouser)
+
 router.route('/users')
     .get(getUsers);
 
@@ -55,7 +59,7 @@ router.route("/user/addFavourite")
     .post(addOfferToFavourites)
 //RUTES PER LES OFERTES
 router.route('/offer')
-    .post(createOffer)
+    .post(multer.array("pictures",6),createOffer)
 
 router.route('/offers')
     .get(getOffers)

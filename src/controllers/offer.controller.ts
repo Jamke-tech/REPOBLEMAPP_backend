@@ -3,16 +3,35 @@ import Offer from '../models/Offer'
 import path from 'path';
 import fs from 'fs-extra';
 import User from '../models/User';
+import cloudinary from '../libs/cloudinary';
+import multer, { Multer } from 'multer';
 
 
 export async function createOffer ( req: Request, res: Response): Promise<Response>{
 //Recuperem la info de request body per poder-la treure i posar-la a la base de dades
     const {id}=req.params;
+    var pictureFiles = req.files;
+    //Pujem les fotografies al cloudinary
+    let multiplePicturePromise = (pictureFiles as Array<unknown>).map((picture:any) => {
+       cloudinary.uploader.upload(picture.path)
+      fs.unlink(path.resolve(picture.path))
 
+
+
+
+
+    }
+      
+    );
+
+    // await all the cloudinary upload functions in promise.all, exactly where the magic happens
+    let imageResponses = await Promise.all(multiplePicturePromise);
+
+    console.log(imageResponses);
+  /*
     const {
         title,
         description,
-        //pictures,
         province,
         place,
         coordinates, // [47.2555685 , 1.2568]
@@ -25,7 +44,6 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
     const newOffer = {
         title: title,
         description: description,
-       // pictures: req.file.path,
         place: place, //Carrer Maria del Carme del Mar, 23, 2n 1r
         province : province,
         point:{
@@ -70,9 +88,6 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
               },
             );
 
-            
-
-            
             return res.json({
                 code: '200',
                 message: "Offer correctly uploaded",
@@ -81,12 +96,12 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         }
     }
     catch(e){
-      console.log(e);
+      console.log(e);*/
         return res.json({
             code: '505',
             message: "Server Down",
           });
-    }
+   //}
 }
 
 export async function deleteOffer (req: Request, res: Response): Promise<Response>{
@@ -138,7 +153,7 @@ export async function getOffers (req:Request, res: Response): Promise<Response>{
         code: '500',
         message: 'Server Down or BBDD broken',
         numberOffers: 0,
-        usersList: null
+        offersList: null
       }
         );
     }

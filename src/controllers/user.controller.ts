@@ -6,13 +6,8 @@ import fs from 'fs-extra';
 const jwt = require('jsonwebtoken');
 
 
-const cloudinary = require('cloudinary').v2
+import cloudinary from "../libs/cloudinary" ;
 
-cloudinary.config({
-  cloud_name: "repoblemapp",
-  api_key: "168943783851354",
-  api_secret: "uNelnOOPzkuhsrsU2gvgi_ls_es"
-});
 
 /* ---- EXEMPLE DE FUNCIÓ ---
 export async function createUser (req: Request, res: Response): Promise<Response> {
@@ -276,6 +271,37 @@ catch{
   });
 
 }
+}
+export async function uploadPhotouser(req:Request, res:Response):Promise<Response>{
+  //Hem de pujar la foto al serviodr des de la localització que li hem posat al multer
+  try{
+    const result = await cloudinary.uploader.upload(req.file.path);
+    console.log(result);
+    //Un cop pujada hem de posar la nova direccio de la fotografia
+    const userUpdated = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        "profilePhoto": result.secure_url,
+      },
+    );
+    //Borrem la imatge que tenim al servidor local
+    await fs.unlink(path.resolve(req.file.path))
+
+    return res.json({
+      code: '200',
+      message: "Image Uploaded to Cloudinary",
+    });
+  }
+  catch (e){
+    console.log(e);
+    return res.json({
+      code: '400',
+      message: "Error Cloudinary",
+    });
+  }
+
+  
+
 }
 
 
