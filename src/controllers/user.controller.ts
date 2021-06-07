@@ -330,7 +330,7 @@ export async function getUsers(req: Request, res: Response): Promise<Response> {
 
 export async function getUser(req: Request, res: Response): Promise<Response> {
   try{
-  const user = await User.findById(req.params.id).populate("savedOffers");
+  const user = await User.findById(req.params.id).populate("savedOffers createdOffers");
   
   
   return res.json({
@@ -470,25 +470,25 @@ export async function deleteOfferOfFavourites(req: Request,res:Response): Promis
 
   const{idUser, idOffer}=req.body;
   try{
-
-    console.log(idUser);
     const user = await User.findById(idUser,'savedOffers');
+    
+    console.log(user);
     var vectorOffers = user.savedOffers;
+    console.log(vectorOffers);
     var i = vectorOffers.indexOf(idOffer);
     vectorOffers.splice(i,1);
     console.log(vectorOffers);
 
-
-    /*const userUpdated = await User.findByIdAndUpdate(
+    const userUpdated = await User.findByIdAndUpdate(
       idUser,
       {
         "savedOffers": vectorOffers,
       },
-    );*/
+    );
     return res.json({
       code:"200",
       message: "successfully updated",
-      //user: userUpdated,
+      user: userUpdated,
     }); 
 
   }

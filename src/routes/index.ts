@@ -59,8 +59,8 @@ router.route("/user/:id")
 router.route("/user/addFavourite")
     .post(addOfferToFavourites)
 
-router.route("user/deleteFavourite")
-    .delete(deleteOfferOfFavourites)
+router.route("/user/deleteFavourite")
+    .post(deleteOfferOfFavourites)
 //RUTES PER LES OFERTES
 router.route('/offer')
     .post(multer.array("pictures",6),createOffer)
