@@ -139,7 +139,7 @@ export async function deleteOffer (req: Request, res: Response): Promise<Respons
 
 export async function getOffers (req:Request, res: Response): Promise<Response>{
     //Funció que retorna tota la llista de ofertes sense cap filtre
-    const offers= await Offer.find().populate();
+    const offers= await Offer.find().populate('owner');
     try{
         return res.json({
             code: '200',

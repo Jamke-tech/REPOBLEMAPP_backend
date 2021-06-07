@@ -468,25 +468,27 @@ export async function addOfferToFavourites(req: Request,res:Response): Promise<R
 export async function deleteOfferOfFavourites(req: Request,res:Response): Promise<Response>{
   //Aquesta funció afegeix la oferta que ens pasen per body ( id ), al usuari que ens passen ( també id)
 
-  const{ idUser, idOffer}=req.body;
+  const{idUser, idOffer}=req.body;
   try{
 
     console.log(idUser);
     const user = await User.findById(idUser,'savedOffers');
     var vectorOffers = user.savedOffers;
-    const offer = await vectorOffers.findByIdAndDelete(idOffer);
-    
+    var i = vectorOffers.indexOf(idOffer);
+    vectorOffers.splice(i,1);
+    console.log(vectorOffers);
 
-    const userUpdated = await User.findByIdAndUpdate(
+
+    /*const userUpdated = await User.findByIdAndUpdate(
       idUser,
       {
         "savedOffers": vectorOffers,
       },
-    );
+    );*/
     return res.json({
       code:"200",
       message: "successfully updated",
-      user: userUpdated,
+      //user: userUpdated,
     }); 
 
   }
