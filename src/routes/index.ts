@@ -11,7 +11,8 @@ import {
   loginADMIN,
   createUserNoPhoto,
   addOfferToFavourites,
-  uploadPhotouser
+  uploadPhotouser,
+  deleteOfferOfFavourites
 } from "../controllers/user.controller";
 import multer from "../libs/multer";
 import { createChat, deleteChat, findChat, getChats, getMessages } from '../controllers/chat.controller';
@@ -57,6 +58,9 @@ router.route("/user/:id")
     
 router.route("/user/addFavourite")
     .post(addOfferToFavourites)
+
+router.route("user/deleteFavourite")
+    .delete(deleteOfferOfFavourites)
 //RUTES PER LES OFERTES
 router.route('/offer')
     .post(multer.array("pictures",6),createOffer)

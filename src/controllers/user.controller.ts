@@ -469,11 +469,34 @@ export async function deleteOfferOfFavourites(req: Request,res:Response): Promis
   //Aquesta funció afegeix la oferta que ens pasen per body ( id ), al usuari que ens passen ( també id)
 
   const{ idUser, idOffer}=req.body;
-  return res.json({
-    code:"506",
-    message: "Service no disponible"
-    
-  }); 
+  try{
 
+    console.log(idUser);
+    const user = await User.findById(idUser,'savedOffers');
+    var vectorOffers = user.savedOffers;
+    const offer = await vectorOffers.findByIdAndDelete(idOffer);
+    
+
+    const userUpdated = await User.findByIdAndUpdate(
+      idUser,
+      {
+        "savedOffers": vectorOffers,
+      },
+    );
+    return res.json({
+      code:"200",
+      message: "successfully updated",
+      user: userUpdated,
+    }); 
+
+  }
+  catch (e){
+    console.log(e);
+    return res.json({
+      code:"500",
+      message: "Error en el servidor",
+      user: null,
+    }); 
+  }
 
 }
