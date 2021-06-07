@@ -2,14 +2,18 @@ import {Request, Response} from 'express'
 import Offer from '../models/Offer'
 import path from 'path';
 import fs from 'fs-extra';
+import User from '../models/User';
 
 
 export async function createOffer ( req: Request, res: Response): Promise<Response>{
 //Recuperem la info de request body per poder-la treure i posar-la a la base de dades
+    const {id}=req.params;
+
     const {
         title,
         description,
         //pictures,
+        province,
         place,
         coordinates, // [47.2555685 , 1.2568]
         owner,
@@ -22,7 +26,8 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         title: title,
         description: description,
        // pictures: req.file.path,
-        place: place,
+        place: place, //Carrer Maria del Carme del Mar, 23, 2n 1r
+        province : province,
         point:{
           coordinates:coordinates
         },
@@ -34,7 +39,7 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
     try{
         var errorSave : Boolean = false;
         const offer = new Offer(newOffer);//creació del document de mongodb
-        await offer.save(function(err: boolean){
+        const offerSaved = await offer.save(function(err: boolean){
           console.log(err);
           if(err){
             errorSave = true;      
@@ -52,8 +57,22 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         }
 
         else{
-            //Eliminem les fotos
-            //await fs.unlink(path.resolve("../frontend/Angular/RepoblemAPP/src/"+ offer.pictures))
+            //Guardem la oferta que ha creat dins del vector de ofertes creades del usuari
+
+            const owner = User.findById(id);
+
+            var offersCreated = owner.createdOffers;
+            offersCreated.push(offerSaved._id);
+            const userUpdated = await User.findByIdAndUpdate(
+              id,
+              {
+                "createdOffers": offersCreated,
+              },
+            );
+
+            
+
+            
             return res.json({
                 code: '200',
                 message: "Offer correctly uploaded",
