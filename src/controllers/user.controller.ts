@@ -6,13 +6,8 @@ import fs from 'fs-extra';
 const jwt = require('jsonwebtoken');
 
 
-const cloudinary = require('cloudinary').v2
+import cloudinary from "../libs/cloudinary" ;
 
-cloudinary.config({
-  cloud_name: "repoblemapp",
-  api_key: "168943783851354",
-  api_secret: "uNelnOOPzkuhsrsU2gvgi_ls_es"
-});
 
 /* ---- EXEMPLE DE FUNCIÓ ---
 export async function createUser (req: Request, res: Response): Promise<Response> {
@@ -277,6 +272,37 @@ catch{
 
 }
 }
+export async function uploadPhotouser(req:Request, res:Response):Promise<Response>{
+  //Hem de pujar la foto al serviodr des de la localització que li hem posat al multer
+  try{
+    const result = await cloudinary.uploader.upload(req.file.path);
+    console.log(result);
+    //Un cop pujada hem de posar la nova direccio de la fotografia
+    const userUpdated = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        "profilePhoto": result.secure_url,
+      },
+    );
+    //Borrem la imatge que tenim al servidor local
+    await fs.unlink(path.resolve(req.file.path))
+
+    return res.json({
+      code: '200',
+      message: "Image Uploaded to Cloudinary",
+    });
+  }
+  catch (e){
+    console.log(e);
+    return res.json({
+      code: '400',
+      message: "Error Cloudinary",
+    });
+  }
+
+  
+
+}
 
 
 export async function getUsers(req: Request, res: Response): Promise<Response> {
@@ -304,7 +330,7 @@ export async function getUsers(req: Request, res: Response): Promise<Response> {
 
 export async function getUser(req: Request, res: Response): Promise<Response> {
   try{
-  const user = await User.findById(req.params.id).populate("savedOffers");
+  const user = await User.findById(req.params.id).populate("savedOffers createdOffers");
   
   
   return res.json({
@@ -442,12 +468,37 @@ export async function addOfferToFavourites(req: Request,res:Response): Promise<R
 export async function deleteOfferOfFavourites(req: Request,res:Response): Promise<Response>{
   //Aquesta funció afegeix la oferta que ens pasen per body ( id ), al usuari que ens passen ( també id)
 
-  const{ idUser, idOffer}=req.body;
-  return res.json({
-    code:"506",
-    message: "Service no disponible"
+  const{idUser, idOffer}=req.body;
+  try{
+    const user = await User.findById(idUser,'savedOffers');
     
-  }); 
+    console.log(user);
+    var vectorOffers = user.savedOffers;
+    console.log(vectorOffers);
+    var i = vectorOffers.indexOf(idOffer);
+    vectorOffers.splice(i,1);
+    console.log(vectorOffers);
 
+    const userUpdated = await User.findByIdAndUpdate(
+      idUser,
+      {
+        "savedOffers": vectorOffers,
+      },
+    );
+    return res.json({
+      code:"200",
+      message: "successfully updated",
+      user: userUpdated,
+    }); 
+
+  }
+  catch (e){
+    console.log(e);
+    return res.json({
+      code:"500",
+      message: "Error en el servidor",
+      user: null,
+    }); 
+  }
 
 }

@@ -3,19 +3,36 @@ import Offer from '../models/Offer'
 import path from 'path';
 import fs from 'fs-extra';
 import User from '../models/User';
+import cloudinary from '../libs/cloudinary';
+import multer, { Multer } from 'multer';
 
 
 export async function createOffer ( req: Request, res: Response): Promise<Response>{
 //Recuperem la info de request body per poder-la treure i posar-la a la base de dades
-    const {id}=req.params;
+    var pictureFiles = req.files;
+    //Pujem les fotografies al cloudinary
+    var vectorPictures = Array();
+    let multiplePicturePromise = (pictureFiles as Array<unknown>).map( async (picture:any) => {
+        
+        vectorPictures.push((await cloudinary.uploader.upload(picture.path)).secure_url as String)
+        fs.unlink(path.resolve(picture.path))
 
+    }
+      
+    );
+
+    // await all the cloudinary upload functions in promise.all, exactly where the magic happens
+    let imageResponses = await Promise.all(multiplePicturePromise);
+
+    console.log(vectorPictures);
+  
     const {
         title,
         description,
-        //pictures,
         province,
         place,
-        coordinates, // [47.2555685 , 1.2568]
+        lat ,
+        long , // [47.2555685 , 1.2568]
         owner,
         village,
         price,
@@ -26,11 +43,11 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
     const newOffer = {
         title: title,
         description: description,
-       // pictures: req.file.path,
+        pictures: vectorPictures,
         place: place, //Carrer Maria del Carme del Mar, 23, 2n 1r
         province : province,
         point:{
-          coordinates:coordinates
+          coordinates:[ Number(lat), Number(long)]
         },
         owner: owner,
         village: village,
@@ -41,8 +58,8 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
     try{
         var errorSave : Boolean = false;
         const offer = new Offer(newOffer);//creació del document de mongodb
-        const offerSaved = await offer.save(function(err: boolean){
-          console.log(err);
+        await offer.save(function(err: boolean){
+          //console.log(err);
           if(err){
             errorSave = true;      
           }
@@ -61,20 +78,18 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         else{
             //Guardem la oferta que ha creat dins del vector de ofertes creades del usuari
 
-            const owner = User.findById(id);
+            const proper = await User.findById(owner);
+            console.log(proper);
 
-            var offersCreated = owner.createdOffers;
-            offersCreated.push(offerSaved._id);
+            var offersCreated = proper.createdOffers;
+            offersCreated.push(offer.id);
             const userUpdated = await User.findByIdAndUpdate(
-              id,
+              owner,
               {
                 "createdOffers": offersCreated,
               },
             );
 
-            
-
-            
             return res.json({
                 code: '200',
                 message: "Offer correctly uploaded",
@@ -88,7 +103,7 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
             code: '505',
             message: "Server Down",
           });
-    }
+   }
 }
 
 export async function deleteOffer (req: Request, res: Response): Promise<Response>{
@@ -126,8 +141,9 @@ export async function deleteOffer (req: Request, res: Response): Promise<Respons
 
 export async function getOffers (req:Request, res: Response): Promise<Response>{
     //Funció que retorna tota la llista de ofertes sense cap filtre
-    const offers= await Offer.find().populate();
+    const offers= await Offer.find().populate('owner');
     try{
+      //console.log(offers);
         return res.json({
             code: '200',
             message: 'List of Offers',
@@ -140,7 +156,7 @@ export async function getOffers (req:Request, res: Response): Promise<Response>{
         code: '500',
         message: 'Server Down or BBDD broken',
         numberOffers: 0,
-        usersList: null
+        offersList: null
       }
         );
     }
@@ -148,7 +164,7 @@ export async function getOffers (req:Request, res: Response): Promise<Response>{
 
 export async function getOffer(req: Request, res: Response): Promise<Response> {
     try{
-    const offer = await Offer.findById(req.params.id).populate();
+    const offer = await Offer.findById(req.params.id).populate('owner');
     
     
     return res.json({

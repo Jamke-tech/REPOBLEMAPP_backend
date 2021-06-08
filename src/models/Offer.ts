@@ -7,7 +7,7 @@ const schema = new Schema({
     
     title: String,
     description: String,
-    pictures: String,
+    pictures: [{type:String}],
     place: String, //Adreça del carrer
     village: String, //Poble
     province: {type: String, enum: ["Girona", "Barcelona","Tarragona","LLeida"], required:true}, //Provincia
