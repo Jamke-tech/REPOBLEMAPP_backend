@@ -19,6 +19,7 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         owner,
         village,
         price,
+        services
     } = req.body;
 
     //Posem tot en una nova variable de Offer
@@ -33,7 +34,8 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         },
         owner: owner,
         village: village,
-        price: price
+        price: price,
+        services: services
     };
     console.log(newOffer);
     try{
