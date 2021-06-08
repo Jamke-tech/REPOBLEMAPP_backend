@@ -17,6 +17,7 @@ const schema = new Schema({
     },   
     owner: {type: SchemaMongo.ObjectId, ref: "User", populate:true},
     price: Number,
+    services: String,
 
 });
 
