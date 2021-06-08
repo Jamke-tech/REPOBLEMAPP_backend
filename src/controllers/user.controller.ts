@@ -226,7 +226,7 @@ export async function createUserNoPhoto( req: Request,  res: Response ): Promise
     password: password,
     email: email,
     phone: phone,
-    profilePhoto: "uploads/noprofile.png",
+    profilePhoto: "https://res.cloudinary.com/repoblemapp/image/upload/v1623175090/noprofile_shlgxn.png",
     birthDate: birthDate,
     role: "USER",
     savedOffers: [],
