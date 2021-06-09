@@ -5,13 +5,8 @@ var SchemaMongo = mongoose.Schema;
 //Falta implemtnar és una base molt pobre
 
 const schema = new Schema({
-    owner: {type: SchemaMongo.ObjectId, ref: "User"},
-    admin:{type: SchemaMongo.ObjectId, ref: "User",
-            denormalize:['name','surname'], 
-            required:true,
-            propagate: true,
-            populate:true
-    },
+    owner: String,
+    admin: String,
     message: String,
 });
 
