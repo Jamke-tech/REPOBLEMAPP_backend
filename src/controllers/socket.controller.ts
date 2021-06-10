@@ -44,7 +44,7 @@ export  function createSocket(){
             newMessages.push({sender:sender,content:content});
             //console.log(vectorOffers);
 
-            const userUpdated = await Chat.findByIdAndUpdate(
+            const chatUpdated = await Chat.findByIdAndUpdate(
             chatID,
             {
                 "messages": newMessages,

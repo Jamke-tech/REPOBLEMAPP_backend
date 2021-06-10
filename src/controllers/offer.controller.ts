@@ -162,6 +162,40 @@ export async function getOffers (req:Request, res: Response): Promise<Response>{
     }
 }
 
+export async function getSearchOffers (req:Request, res: Response): Promise<Response>{
+  
+  const village = req.params.village;
+  const offers= await Offer.find().populate();
+  const searchOffersVector = [];
+  
+
+  for( let i = 0; i< offers.length; i++){
+    if (offers[i].village == village){
+      searchOffersVector.push(offers[i]);
+    }
+  }
+
+
+  try{
+    //console.log(offers);
+      return res.json({
+          code: '200',
+          message: 'List of searched Offers',
+          numberOffers: offers.length,
+          searchOffers: searchOffersVector
+          });
+  }
+  catch{
+    return res.json({
+      code: '500',
+      message: 'Server Down or BBDD broken',
+      numberOffers: 0,
+      offersList: null
+    }
+      );
+  }
+}
+
 export async function getOffer(req: Request, res: Response): Promise<Response> {
     try{
     const offer = await Offer.findById(req.params.id).populate('owner');
