@@ -16,14 +16,10 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         
         vectorPictures.push((await cloudinary.uploader.upload(picture.path)).secure_url as String)
         fs.unlink(path.resolve(picture.path))
-
     }
-      
     );
-
     // await all the cloudinary upload functions in promise.all, exactly where the magic happens
     let imageResponses = await Promise.all(multiplePicturePromise);
-
     console.log(vectorPictures);
   
     const {

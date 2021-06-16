@@ -17,7 +17,7 @@ const schema = new Schema({
     },   
     owner: {type: SchemaMongo.ObjectId, ref: "User", populate:true},
     price: Number,
-    services: String,
+    services: {type:String, enum: ["pool", "airC","super","terrace","parking","local"]},
 
 });
 
