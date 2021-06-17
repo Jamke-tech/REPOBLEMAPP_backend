@@ -1,4 +1,4 @@
-import { createOffer, deleteOffer, getOffer, getOffers, getSearchOffers } from '../controllers/offer.controller';
+import { createOffer, deleteOffer, getOffer, getOffers, getSearchOffers, updatedOffer } from '../controllers/offer.controller';
 import { Router } from "express";
 import {
   createCompleteUser,
@@ -74,6 +74,7 @@ router.route('/offers/:village')
 router.route('/offer/:id')
     .get(getOffer)
     .delete(deleteOffer)
+    .post(updatedOffer)
 
 
 //rutes relacionades amb el chat

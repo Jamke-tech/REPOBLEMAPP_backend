@@ -165,7 +165,7 @@ export async function getOffers (req:Request, res: Response): Promise<Response>{
 export async function getSearchOffers (req:Request, res: Response): Promise<Response>{
   
   const village = req.params.village;
-  const offers= await Offer.find().populate();
+  const offers= await Offer.find().populate("owner");
   const searchOffersVector = [];
   
 
@@ -221,24 +221,29 @@ export async function getOffer(req: Request, res: Response): Promise<Response> {
     const {
         title,
         description,
-        pictures,
-        ubication,
-        owner,
+        place,
         village,
+        province,
+        lat,
+        long,
         price,
+        services,
     } = req.body;
     try{
     //Posem tot en una nova variable de Offer
     const updatedOffer = await Offer.findByIdAndUpdate(
         id,
         {
-            title,
-            description,
-            pictures,
-            ubication,
-            owner,
-            village,
-            price,
+          title: title,
+          description: description,
+          place: place, 
+          province : province,
+          point:{
+            coordinates:[ Number(lat), Number(long)]
+          },
+          village: village,
+          price: price,
+          services: services
         },
         {new: true}
     );
