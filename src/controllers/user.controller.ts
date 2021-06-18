@@ -125,7 +125,6 @@ export async function loginUsers (req:Request,res:Response):Promise<Response> {
    
 }
 
-
 export async function createADMIN(  req: Request,  res: Response): Promise<Response> {
   const { userName, password } = req.body;
 
@@ -273,7 +272,7 @@ catch{
 }
 }
 export async function uploadPhotouser(req:Request, res:Response):Promise<Response>{
-  //Hem de pujar la foto al serviodr des de la localització que li hem posat al multer
+  //Hem de pujar la foto al serviodr des de la localització que li hem posat al multe
   try{
     const result = await cloudinary.uploader.upload(req.file.path);
     console.log(result);
@@ -291,62 +290,58 @@ export async function uploadPhotouser(req:Request, res:Response):Promise<Respons
       code: '200',
       message: "Image Uploaded to Cloudinary",
     });
-  }
-  catch (e){
-    console.log(e);
-    return res.json({
-      code: '400',
-      message: "Error Cloudinary",
-    });
-  }
 
-  
+      
+    }
+    catch (e){
+      console.log(e);
+      return res.json({
+        code: '400',
+        message: "Error Cloudinary",
+      });
+    }
 
 }
 
-
 export async function getUsers(req: Request, res: Response): Promise<Response> {
-  try{
-    const Users = await User.find().populate();
-    
-    return res.json({
-      code: '200',
-      message: 'List of Users',
-      usersList: Users
-    }
-      );
-  }
-  catch{
-    return res.json({
-      code: '500',
-      message: 'Server Down or BBDD broken',
-      usersList: null
-    }
-      );
-  }
+  var Users;
+    try{
+      Users = await User.find().populate();
+      return res.json({
+        code: '200',
+        message: 'List of Users',
+        usersList: Users
+      });
+      }
+      catch{
+        return res.json({
+          code: '500',
+          message: 'Server Down or BBDD broken',
+          usersList: null
+        }
+          );
+          }
+
 
 }
 
 
 export async function getUser(req: Request, res: Response): Promise<Response> {
-  try{
-  const user = await User.findById(req.params.id).populate("savedOffers createdOffers");
-  
-  
-  return res.json({
-    code: '200',
-    message: 'User Found',
-    user: user});
-  }
-  catch{
-    return res.json({
-      code: '500',
-      message: 'Server Down or BBDD error',
-      user: null});
-    }
-
+  var user;
+        try{
+        user = await User.findById(req.params.id).populate("savedOffers createdOffers");
+        return res.json({
+          code: '200',
+          message: 'User Found',
+          user: user});
+        }
+        catch{
+          return res.json({
+            code: '500',
+            message: 'Server Down or BBDD error',
+            user: null});
+          }
 }
-
 
 export async function deleteUser(req: Request, res: Response): Promise<Response> {
   try{

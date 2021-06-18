@@ -195,7 +195,7 @@ export async function getSearchOffers (req:Request, res: Response): Promise<Resp
 export async function getSearchOffersByProvince (req:Request, res: Response): Promise<Response>{
   
   const province = req.params.province;
-  const offers= await Offer.find().populate();
+  const offers= await Offer.find().populate("owner");
   const searchOffersVector = [];
   
 

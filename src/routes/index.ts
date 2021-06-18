@@ -19,6 +19,7 @@ import {
 import multer from "../libs/multer";
 import { createChat, deleteChat, findChat, getChats, getMessages } from '../controllers/chat.controller';
 import { createSocket } from '../controllers/socket.controller';
+const auth = require('../auth')
 
 
 //Construim el router on posarem totes les entrades de la API
@@ -38,69 +39,69 @@ router.route("/create/admin")
     .post(createADMIN) //Para crear un administrador
 
 router.route("/user")
-    .post(multer.single('image'),createCompleteUser)
-    .put(createUserNoPhoto);
+    .post(auth,multer.single('image'),createCompleteUser)
+    .put(auth,createUserNoPhoto);
 
 router.route("/user/newPhoto/:id")
-    .post(multer.single('image'),uploadPhotouser)
+    .post(auth, multer.single('image'),uploadPhotouser)
 
 router.route('/users')
-    .get(getUsers);
+    .get(auth, getUsers);
 
 router.route("/admin/login")
-    .post(loginADMIN)
+    .post(auth, loginADMIN)
 
 router.route("/users/login")
     .post(loginUsers)
 
 router.route("/user/:id")
-    .put(updateUser)
-    .get(getUser)
-    .delete(deleteUser);
+    .put(auth, updateUser)
+    .get(auth, getUser)
+    .delete(auth, deleteUser);
     
 router.route("/user/addFavourite")
-    .post(addOfferToFavourites)
+    .post(auth, addOfferToFavourites)
 
 router.route("/user/deleteFavourite")
-    .post(deleteOfferOfFavourites)
+    .post(auth, deleteOfferOfFavourites)
 //RUTES PER LES OFERTES
 router.route('/offer')
-    .post(multer.array("pictures",6),createOffer)
+    .post(auth,multer.array("pictures",6),createOffer)
 
 router.route('/offers')
-    .get(getOffers)
+    .get(auth, getOffers)
 
-router.route('/offers/:village')
-    .get(getSearchOffers)
+router.route('/offers/filtervillage/:village')
+    .get(auth,getSearchOffers)
 
-router.route('/offers/:province')
-    .get(getSearchOffersByProvince)
+router.route('/offers/filterprovince/:province')
+    .get(auth,getSearchOffersByProvince)
 
 router.route('/offer/:id')
-    .get(getOffer)
-    .delete(deleteOffer)
-    .post(updatedOffer)
+    .get(auth,getOffer)
+    .delete(auth,deleteOffer)
+    .post(auth,updatedOffer)
 
 
 //rutes relacionades amb el chat
 
 router.route('/newChat')
-    .post(createChat)
+    .post(auth,createChat)
 
 router.route('/Messages/:idChat')
-    .get(getMessages)
+    .get(auth,getMessages)
 
 router.route('/Chat/:idUser')
-    .get(getChats)
+    .get(auth,getChats)
 
 router.route('/Chat/:idChat/:idUser')
-    .delete(deleteChat)
+    .delete(auth,deleteChat)
 
 router.route('/Chat/:idOffer/:idUser')
-    .get(findChat)
+    .get(auth,findChat)
 
 router.route('/Chat')
-    .get(createSocket)
+    .get(auth,createSocket)
 
 
 
