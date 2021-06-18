@@ -1,4 +1,6 @@
-import { createOffer, deleteOffer, getOffer, getOffers, getSearchOffers, updatedOffer } from '../controllers/offer.controller';
+
+import { createOffer, deleteOffer, getOffer, getOffers, getSearchOffers,updatedOffer, getSearchOffersByProvince } from '../controllers/offer.controller';
+
 import { Router } from "express";
 import {
   createCompleteUser,
@@ -70,6 +72,9 @@ router.route('/offers')
 
 router.route('/offers/:village')
     .get(getSearchOffers)
+
+router.route('/offers/:province')
+    .get(getSearchOffersByProvince)
 
 router.route('/offer/:id')
     .get(getOffer)

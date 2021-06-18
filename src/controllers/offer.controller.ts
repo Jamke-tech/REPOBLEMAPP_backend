@@ -16,14 +16,10 @@ export async function createOffer ( req: Request, res: Response): Promise<Respon
         
         vectorPictures.push((await cloudinary.uploader.upload(picture.path)).secure_url as String)
         fs.unlink(path.resolve(picture.path))
-
     }
-      
     );
-
     // await all the cloudinary upload functions in promise.all, exactly where the magic happens
     let imageResponses = await Promise.all(multiplePicturePromise);
-
     console.log(vectorPictures);
   
     const {
@@ -171,6 +167,40 @@ export async function getSearchOffers (req:Request, res: Response): Promise<Resp
 
   for( let i = 0; i< offers.length; i++){
     if (offers[i].village == village){
+      searchOffersVector.push(offers[i]);
+    }
+  }
+
+
+  try{
+    //console.log(offers);
+      return res.json({
+          code: '200',
+          message: 'List of searched Offers',
+          numberOffers: offers.length,
+          searchOffers: searchOffersVector
+          });
+  }
+  catch{
+    return res.json({
+      code: '500',
+      message: 'Server Down or BBDD broken',
+      numberOffers: 0,
+      offersList: null
+    }
+      );
+  }
+}
+
+export async function getSearchOffersByProvince (req:Request, res: Response): Promise<Response>{
+  
+  const province = req.params.province;
+  const offers= await Offer.find().populate();
+  const searchOffersVector = [];
+  
+
+  for( let i = 0; i< offers.length; i++){
+    if (offers[i].province == province){
       searchOffersVector.push(offers[i]);
     }
   }
