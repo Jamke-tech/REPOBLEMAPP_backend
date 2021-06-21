@@ -39,8 +39,8 @@ router.route("/create/admin")
     .post(createADMIN) //Para crear un administrador
 
 router.route("/user")
-    .post(auth,multer.single('image'),createCompleteUser)
-    .put(auth,createUserNoPhoto);
+    .post(multer.single('image'),createCompleteUser)
+    .put(createUserNoPhoto);
 
 router.route("/user/newPhoto/:id")
     .post(auth, multer.single('image'),uploadPhotouser)
@@ -49,7 +49,7 @@ router.route('/users')
     .get(auth, getUsers);
 
 router.route("/admin/login")
-    .post(auth, loginADMIN)
+    .post(loginADMIN)
 
 router.route("/users/login")
     .post(loginUsers)

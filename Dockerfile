@@ -7,8 +7,7 @@ COPY package*.json ./
 RUN npm install
 #RUN npm ci --only=production
 
-
-#RUN npm run tsc
+#RUN npm run tsc --project ./
 
 RUN mkdir /usr/src/app/dist
 

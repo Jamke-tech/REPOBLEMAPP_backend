@@ -4,7 +4,7 @@
   "description": "Backend of RepoblemAPP",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --project ./",
     "clean": "rimraf dist",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts"
